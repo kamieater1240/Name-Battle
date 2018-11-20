@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2050
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Name Battle", "Name Battle\Name Battle.vcxproj", "{E4727FE3-D558-48A6-9BAB-7C45073973CD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E4727FE3-D558-48A6-9BAB-7C45073973CD}.Debug|x64.ActiveCfg = Debug|x64
+		{E4727FE3-D558-48A6-9BAB-7C45073973CD}.Debug|x64.Build.0 = Debug|x64
+		{E4727FE3-D558-48A6-9BAB-7C45073973CD}.Debug|x86.ActiveCfg = Debug|Win32
+		{E4727FE3-D558-48A6-9BAB-7C45073973CD}.Debug|x86.Build.0 = Debug|Win32
+		{E4727FE3-D558-48A6-9BAB-7C45073973CD}.Release|x64.ActiveCfg = Release|x64
+		{E4727FE3-D558-48A6-9BAB-7C45073973CD}.Release|x64.Build.0 = Release|x64
+		{E4727FE3-D558-48A6-9BAB-7C45073973CD}.Release|x86.ActiveCfg = Release|Win32
+		{E4727FE3-D558-48A6-9BAB-7C45073973CD}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C499D23C-9757-43CF-9D3B-535CBD39A369}
+	EndGlobalSection
+EndGlobal
