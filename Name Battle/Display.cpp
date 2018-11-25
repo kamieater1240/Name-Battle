@@ -5,7 +5,6 @@
 #include <conio.h>
 #include <time.h>
 #include <windows.h>
-#include <string>
 #include <iostream>
 #include "Display.h"
 using namespace std;
@@ -146,7 +145,7 @@ void drawchoices(HANDLE hWindow, COORD pos, char(*choice)[100], int listNum, int
 }
 
 //既存キャラクターを画面に表示する
-void drawchoices_forLoad(HANDLE hWindow, COORD pos, STATUS *loadList, int listNum, int indexsize, int columnsize, int index, int column) {
+void drawchoices_forLoad(HANDLE hWindow, COORD pos, vector<Character> loadList, int listNum, int indexsize, int columnsize, int index, int column) {
 
 
 	pos = { 2, 4 };
@@ -167,7 +166,7 @@ void drawchoices_forLoad(HANDLE hWindow, COORD pos, STATUS *loadList, int listNu
 				SetConsoleTextAttribute(hWindow, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
 			}
 
-			printf("%s", (loadList + i * 3 + j)->name);
+			printf("%s", loadList[i * 3 + j].name());
 
 			if ((i * 3 + j) == listNum - 1)
 				break;
@@ -224,7 +223,7 @@ int DrawStartMenu(HANDLE hWindow, COORD pos) {
 }
 
 //既存キャラクターをロードする
-int LoadCharacter(HANDLE hWindow, COORD pos, STATUS *loadList, int listNum) {
+int LoadCharacter(HANDLE hWindow, COORD pos, vector<Character> loadList, int listNum) {
 	int press, row = 0, column = 0;
 
 	while (1) {

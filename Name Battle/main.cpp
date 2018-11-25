@@ -16,9 +16,9 @@
 using namespace std;
 
 //入力したキャラクター名前が存在しているかどうか確認する
-bool FindName(STATUS *input, STATUS *loadList, int loadNum);
+bool FindName(Character *input, vector<Character> loadList, int loadNum);
 
-void PrintPlayerStatus(HANDLE hWindow, COORD pos, STATUS *input);
+void PrintPlayerStatus(HANDLE hWindow, COORD pos, Character *input);
 
 //Cursorの座標
 COORD pos = { 0, 0 };
@@ -38,7 +38,7 @@ void main() {
 	SetConsoleCursorInfo(hWindow, &CCI);
 
 	//window titleを設定する
-	SetConsoleTitleA("セーブ　クリスタル");
+	SetConsoleTitleA("ネーム　バトラー");
 
 	//--------------------------------データロード------------------------------------------------
 	//ファイルをオープンする
@@ -51,14 +51,14 @@ void main() {
 
 	//Load saved character
 	vector<Character> saved_Characters;
-	Character load_Character;
+	Character load_Character("Fatal Crescent Flash", "Fatal Helix", "Termination Slash - Dawn", "Rebellious Sword Dance");
 	int characterNum = 0;
 
 	while (fread(&load_Character, sizeof(load_Character), 1, fp) == 1) {
+		printf("%d HAHHAA\n", load_Character.hp());
 		saved_Characters.push_back(load_Character);
 		characterNum++;
 	}
-	//auto iter = saved_Characters->begin();
 	//--------------------------------------------------------------------------------------------
 
 	//=========================================//
@@ -66,7 +66,7 @@ void main() {
 	/*STATUS input_status;
 	STATUS *in_st;
 	in_st = &input_status;*/
-	Character input_status;
+	Character input_status("Fatal Crescent Flash", "Fatal Helix", "Termination Slash - Dawn", "Rebellious Sword Dance");
 	Character *in_st;
 	in_st = &input_status;
 	//=========================================//
@@ -80,39 +80,32 @@ void main() {
 		//新規キャラクターを生成する
 		if (CreateorLoad == 0) {
 
+			int temphp, tempatk, tempdef, tempattr;
+			char tempname[100];
+
 			srand((unsigned)time(NULL));
 
 			printf("キャラクターの名前を入力してください:");
-			scanf("%s", in_st->name);
+			scanf("%s", tempname);
+			in_st->name(tempname);
 
 			bool HaveorNot = false;
 			if (characterNum > 0) {
-				//HaveorNot = FindName(in_st, saved_Char_P, characterNum);
-				if (HaveorNot == false) {
-					for (int i = 0; i < 4; i++) {
-						if (i == 0)
-							in_st->hp = (rand() % (500 - 100 + 1)) + 100;
-						else if (i == 1)
-							in_st->atk = (rand() % (100 - 10 + 1)) + 10;
-						else if (i == 2)
-							in_st->def = (rand() % (100 - 10 + 1)) + 10;
-						else if (i == 3)
-							in_st->attribute = (rand() % (1 - 0 + 1)) + 0;
-					}
-					fwrite(in_st, sizeof(*in_st), 1, fp);
-				}
+				HaveorNot = FindName(in_st, saved_Characters, characterNum);
 			}
-			else {
+
+			if (HaveorNot == false) {
 				for (int i = 0; i < 4; i++) {
 					if (i == 0)
-						in_st->hp = (rand() % (500 - 100 + 1)) + 100;
+						temphp = (rand() % (500 - 100 + 1)) + 100;
 					else if (i == 1)
-						in_st->atk = (rand() % (100 - 10 + 1)) + 10;
+						tempatk = (rand() % (100 - 10 + 1)) + 10;
 					else if (i == 2)
-						in_st->def = (rand() % (100 - 10 + 1)) + 10;
+						tempdef = (rand() % (100 - 10 + 1)) + 10;
 					else if (i == 3)
-						in_st->attribute = (rand() % (1 - 0 + 1)) + 0;
+						tempattr = (rand() % (1 - 0 + 1)) + 0;
 				}
+				in_st->setproperties(tempname, temphp, tempatk, tempdef, tempattr, 200);
 				fwrite(in_st, sizeof(*in_st), 1, fp);
 			}
 
@@ -145,7 +138,7 @@ void main() {
 			}
 
 			int getNum = 0;
-			getNum = LoadCharacter(hWindow, pos, saved_Char_P, characterNum);
+			getNum = LoadCharacter(hWindow, pos, saved_Characters, characterNum);
 			SetConsoleTextAttribute(hWindow, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | 0x0);
 			system("cls");
 
@@ -153,7 +146,7 @@ void main() {
 			SetConsoleCursorPosition(hWindow, pos);
 			printf("%d番目キャラクターをゲットします!!!!!\n", getNum + 1);
 
-			*in_st = *(saved_Char_P + getNum);
+			*in_st = saved_Characters[getNum];
 			PrintPlayerStatus(hWindow, pos, in_st);
 		}
 		flag_finished = false;
@@ -191,9 +184,9 @@ bool FindName(Character *input, vector<Character> loadList, int loadNum) {
 
 	char check1[100], check2[100];
 
-	for (int i = 0; i < strlen(input->name); i++)
-		check1[i] = tolower(input->name[i]);
-	check1[strlen(input->name)] = '\0';
+	for (int i = 0; i < input->name().length(); i++)
+		check1[i] = tolower(input->name()[i]);
+	check1[input->name().length()] = '\0';
 
 	for (int i = 0; i < loadNum; i++) {
 
@@ -204,17 +197,13 @@ bool FindName(Character *input, vector<Character> loadList, int loadNum) {
 
 
 		}*/
-		for (int j = 0; j < strlen(loadList[i].name); j++)
-			check2[j] = tolower(loadList[i].name[j]);
-		check2[strlen(loadList[i].name)] = '\0';
-
+		for (int j = 0; j < loadList[i].name().length(); j++)
+			check2[j] = tolower(loadList[i].name()[j]);
+		check2[loadList[i].name().length()] = '\0';
 
 		//たとえ入力された名前のアルファベットの大小が違っても同じ名前を判断できる
 		if (!strcmp(check1, check2)) {
-			input->hp = loadList[i].hp();
-			input->atk = loadList[i].atk();
-			input->def = loadList[i].def();
-			input->attribute = loadList[i].attribute();
+			input->setproperties(input->name(), loadList[i].hp(), loadList[i].atk(), loadList[i].def(), loadList[i].attribute(), 200);
 			return true;
 		}
 	}
@@ -231,7 +220,7 @@ void PrintPlayerStatus(HANDLE hWindow, COORD pos, Character *input) {
 		pos.Y = 10 + i;
 		SetConsoleCursorPosition(hWindow, pos);
 		if (i == 0)
-			printf("名前：%s", input->name());
+			printf("名前：%s", input->name().c_str());
 		else if (i == 1)
 			printf("HP：%d", input->hp());
 		else if (i == 2)
@@ -239,7 +228,7 @@ void PrintPlayerStatus(HANDLE hWindow, COORD pos, Character *input) {
 		else if (i == 3)
 			printf("DEF：%d", input->def());
 		else {
-			if(input->attribute==0)
+			if(input->attribute() == 0)
 				printf("ATTRIBUTE：Physic", input->attribute());
 			else
 				printf("ATTRIBUTE：Magic", input->attribute());

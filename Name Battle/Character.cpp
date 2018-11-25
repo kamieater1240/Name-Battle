@@ -10,16 +10,24 @@
 #include "Character.h"
 using namespace std;
 
-Character::Character() {
+Character::Character(const char *SkillName1, const char *SkillName2, const char *SkillName3, const char *SkillName4) {
 	_name = "No name character";
 	_hp = 100;
 	_atk = 10;
 	_def = 10;
 	_attribute = 0;
+	_mp = 200;
+	skill1 = Skill(SkillName1, 50, 20);
+	skill2 = Skill(SkillName2, 80, 60);
+	skill3 = Skill(SkillName3, 120, 100);
+	skill4 = Skill(SkillName4, 200, 200);
 }
 
-Character::Character(string &name, int HP, int ATK, int DEF, int ATTR) 
-	:_name(name), _hp(HP), _atk(ATK), _def(DEF), _attribute(ATTR)
+Character::Character(string &name, int HP, int ATK, int DEF, int ATTR, int MP, const char *SkillName1, const char *SkillName2, const char *SkillName3, const char *SkillName4)
+	:_name(name), _hp(HP), _atk(ATK), _def(DEF), _attribute(ATTR), _mp(MP)
 {
-	
+	skill1 = Skill(SkillName1, 50, 20);
+	skill2 = Skill(SkillName2, 80, 60);
+	skill3 = Skill(SkillName3, 120, 100);
+	skill4 = Skill(SkillName4, 200, 200);
 }
