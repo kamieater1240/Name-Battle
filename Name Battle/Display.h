@@ -1,6 +1,19 @@
 #pragma once
 #ifndef DISPLAY_H
 #define DISPLAY_H
+#include <string>
+using namespace std;
+
+//キーボードの入力コードのENUM
+enum INPUTCOMMAND
+{
+	UP = 72,
+	DOWN = 80,
+	LEFT = 75,
+	RIGHT = 77,
+	ENTER = 13,
+	ESC = 27,
+};
 
 //Attribute = 0 physic, 1 magic
 typedef struct {
@@ -11,11 +24,33 @@ typedef struct {
 	int attribute;
 }STATUS;
 
+//windowのサイズ
+typedef struct
+{
+	int x;
+	int y;
+	int wide;
+} WINDOWSIZE;
+
+//Windowsのposition
+typedef struct
+{
+	int x;
+	int y;
+} BEGINPOSITION;
+
+//Windowsの形
+typedef struct
+{
+	string WindowFrameStyle;
+	short WindowColor;
+} WINDOWSTYLE;
+
 int getinput(int *row, int rowNum, int * column, int columnNum, int listNum);
 
 void ClearScreen(HANDLE hWindow, COORD pos, int height, int width);
 
-void DrawRectangle(HANDLE hWindow, COORD pos, int width, int height, char drawChar, char emptyChar);
+int makeWindow(HANDLE hwindow, BEGINPOSITION bposition, WINDOWSIZE wsize, WINDOWSTYLE windowStyle);
 
 void drawchoices(HANDLE hWindow, COORD pos, char(*choice)[100], int listNum, int index);
 

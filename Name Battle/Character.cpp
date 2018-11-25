@@ -18,10 +18,8 @@ Character::Character() {
 	_attribute = 0;
 }
 
-Character::Character(string &name, int HP, int ATK, int DEF, int ATTR) {
-	_name = name;
-	_hp = HP;
-	_atk = ATK;
-	_def = DEF;
-	_attribute = ATTR;
+Character::Character(string &name, int HP, int ATK, int DEF, int ATTR) 
+	:_name(name), _hp(HP), _atk(ATK), _def(DEF), _attribute(ATTR)
+{
+	
 }

@@ -10,17 +10,6 @@
 #include "Display.h"
 using namespace std;
 
-//キーボードの入力コードのENUM
-enum INPUTCOMMAND
-{
-	UP = 72,
-	DOWN = 80,
-	LEFT = 75,
-	RIGHT = 77,
-	ENTER = 13,
-	ESC = 27,
-};
-
 const char *startText[] =
 {
 	"セーブクリスタルへようこそ！！\n",
@@ -76,7 +65,7 @@ int getinput(int *row, int rowNum, int * column, int columnNum, int listNum) {
 
 void ClearScreen(HANDLE hWindow, COORD pos, int height, int width) {
 
-	pos = {0, 0};
+	pos = { 0, 0 };
 	SetConsoleCursorPosition(hWindow, pos);
 	for (int i = 0; i < height; i++) {
 		for (int j = 0; j < width; j++) {
@@ -87,33 +76,52 @@ void ClearScreen(HANDLE hWindow, COORD pos, int height, int width) {
 	SetConsoleCursorPosition(hWindow, pos);
 }
 
-//ボーダーラインを描く
-void DrawRectangle(HANDLE hWindow, COORD pos, int width, int height, char drawChar, char emptyChar) {
-
-	COORD Moto_pos = pos;
-	string firstAndLastRow(width, drawChar);
-
-	SetConsoleCursorPosition(hWindow, pos);
-
-	//first row
-	cout << firstAndLastRow << endl;
-
-	//rows between first and last
-	for (int row = 0; row < height - 2; row++) {
-		pos.X = Moto_pos.X;
-		pos.Y++;
-		SetConsoleCursorPosition(hWindow, pos);
-		string betweenRow(width, emptyChar);
-		betweenRow[0] = drawChar;
-		betweenRow[width - 1] = drawChar;
-		//here we add the posX, so adding posX spaces in front of each line
-		cout << betweenRow << endl;
+//make the window by position size type
+int makeWindow(HANDLE hwindow, BEGINPOSITION bposition, WINDOWSIZE wsize, WINDOWSTYLE windowStyle)
+{
+	SetConsoleTextAttribute(hwindow, windowStyle.WindowColor);
+	COORD cursorPosition;
+	cursorPosition.X = bposition.x;
+	cursorPosition.Y = bposition.y;
+	string upLine = "";
+	string leftAndRightLineWide = "";
+	for (size_t uplongi = 0; uplongi < wsize.x; uplongi++)
+	{
+		upLine += windowStyle.WindowFrameStyle;
 	}
+	for (size_t uplongsize = 0; uplongsize < wsize.wide; uplongsize++)
+	{
+		leftAndRightLineWide += windowStyle.WindowFrameStyle;
+		SetConsoleCursorPosition(hwindow, cursorPosition);
+		cout << upLine;
+		cursorPosition.Y++;
+	}
+	if (wsize.y > wsize.wide * 2)
+	{
+		for (size_t lArlongi = 0; lArlongi < (wsize.y - wsize.wide * 2); lArlongi++)
+		{
+			SetConsoleCursorPosition(hwindow, cursorPosition);
+			cout << leftAndRightLineWide;
+			cursorPosition.X += windowStyle.WindowFrameStyle.length() * (wsize.x - wsize.wide);
+			SetConsoleCursorPosition(hwindow, cursorPosition);
+			cout << leftAndRightLineWide;
+			cursorPosition.X = bposition.x;
+			cursorPosition.Y++;
+		}
+	}
+	SetConsoleCursorPosition(hwindow, cursorPosition);
+	for (size_t uplongsize = 0; uplongsize < wsize.wide; uplongsize++)
+	{
+		SetConsoleCursorPosition(hwindow, cursorPosition);
+		cout << upLine;
+		cursorPosition.Y++;
+	}
+	cursorPosition.X = bposition.x + windowStyle.WindowFrameStyle.length() * wsize.wide;
+	cursorPosition.Y = bposition.y + wsize.wide;
+	SetConsoleCursorPosition(hwindow, cursorPosition);
+	SetConsoleTextAttribute(hwindow, FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED);
 
-	pos.X = Moto_pos.X; pos.Y++;
-	SetConsoleCursorPosition(hWindow, pos);
-	//last row
-	cout << firstAndLastRow << endl;
+	return 0;
 }
 
 //選択肢を描く
@@ -124,8 +132,6 @@ void drawchoices(HANDLE hWindow, COORD pos, char(*choice)[100], int listNum, int
 
 	SetConsoleCursorPosition(hWindow, pos);
 	for (int i = 0; i < listNum; i++) {
-		//strlength = strlen(choice[i - 1]);
-		//pos.X = Moto_pos.X - strlength / 2;
 		if (i == index) {
 			SetConsoleTextAttribute(hWindow, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | BACKGROUND_BLUE | BACKGROUND_INTENSITY);
 		}
@@ -181,8 +187,10 @@ int DrawStartMenu(HANDLE hWindow, COORD pos) {
 	system("cls");
 
 	Sleep(400);
-	pos = { 25, 6 };
-	DrawRectangle(hWindow, pos, 50, 8, '*', ' ');
+	BEGINPOSITION LoadCharWindowBeginPosition = { 25,6 };
+	WINDOWSIZE LoadCharWindowSize = { 50, 8, 1 };
+	WINDOWSTYLE LoadCharWindowStyle = { "*",0xB };
+	makeWindow(hWindow, LoadCharWindowBeginPosition, LoadCharWindowSize, LoadCharWindowStyle);
 
 	for (int i = 0; i < objectnum(startText); i++) {
 		strlength = strlen(startText[i]);
@@ -199,8 +207,10 @@ int DrawStartMenu(HANDLE hWindow, COORD pos) {
 	printf("Copyright (c) 2018 Josh, All rights reserved.");
 
 	//選択を描く
-	pos.X = 40; pos.Y = 15;
-	DrawRectangle(hWindow, pos, 20, 4, '*', ' ');
+	LoadCharWindowBeginPosition = { 40, 15 };
+	LoadCharWindowSize = { 20, 4, 1 };
+	LoadCharWindowStyle = { "*",0xB };
+	makeWindow(hWindow, LoadCharWindowBeginPosition, LoadCharWindowSize, LoadCharWindowStyle);
 	while (1) {
 		pos = { 41, 16 };
 		drawchoices(hWindow, pos, choices, 2, row);
@@ -221,9 +231,12 @@ int LoadCharacter(HANDLE hWindow, COORD pos, STATUS *loadList, int listNum) {
 		pos = { 0, 0 };
 		SetConsoleCursorPosition(hWindow, pos);
 		SetConsoleTextAttribute(hWindow, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
-		DrawRectangle(hWindow, pos, 100, 29, '*', ' ');
+		BEGINPOSITION LoadCharWindowBeginPosition = { 0,0 };
+		WINDOWSIZE LoadCharWindowSize = { 50,29,1 };
+		WINDOWSTYLE LoadCharWindowStyle = { "■",0xB };
+		makeWindow(hWindow, LoadCharWindowBeginPosition, LoadCharWindowSize, LoadCharWindowStyle);
 
-		pos = { 2, 2 };
+		pos = { 4, 2 };
 		SetConsoleCursorPosition(hWindow, pos);
 		printf("どのキャラクターを選びますか？");
 		drawchoices_forLoad(hWindow, pos, loadList, listNum, ((listNum - 1) / 3) + 1, 3, row, column);
