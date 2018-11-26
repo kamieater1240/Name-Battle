@@ -5,16 +5,11 @@
 #include <conio.h>
 #include <time.h>
 #include <windows.h>
+#include <fstream>
 #include <iostream>
 #include "Display.h"
 #include "Color.h"
 using namespace std;
-
-const char *startText[] =
-{
-	"セーブクリスタルへようこそ！！\n",
-	"よろしくお願いします。\n"
-};
 
 //入力する鍵を判断する、それに今選択する選択肢の行列を戻る
 int getinput(int *row, int rowNum, int * column, int columnNum, int listNum) {
@@ -134,10 +129,10 @@ void drawchoices(HANDLE hWindow, COORD pos, char(*choice)[100], int listNum, int
 	SetConsoleCursorPosition(hWindow, pos);
 	for (int i = 0; i < listNum; i++) {
 		if (i == index) {
-			SetConsoleTextAttribute(hWindow, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | BACKGROUND_BLUE | BACKGROUND_INTENSITY);
+			setColor(COL_WHITE, COL_GRAY);
 		}
 		else {
-			SetConsoleTextAttribute(hWindow, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
+			setColor(COL_WHITE, COL_LIGHT_GRAY);
 		}
 		SetConsoleCursorPosition(hWindow, pos);
 		pos.Y++;
@@ -179,43 +174,62 @@ void drawchoices_forLoad(HANDLE hWindow, COORD pos, vector<Character> loadList, 
 
 //開始画面を描く
 int DrawStartMenu(HANDLE hWindow, COORD pos) {
-	int strlength, press, row = 0, column = 0;
+	int strlength, press = 0, row = 0, column = 0;
 	char choices[2][100] = {
-	"新規生成\n",
-	"既存ロード"
+		"新規生成\n",
+		"既存ロード"
 	};
 
-	setColor(COL_WHITE, COL_GRAY);
+	/*while (true) {
+
+	}*/
+	setColor(COL_WHITE, COL_LIGHT_GRAY);
 	system("cls");
 
 	Sleep(400);
-	BEGINPOSITION LoadCharWindowBeginPosition = { 25,6 };
-	WINDOWSIZE LoadCharWindowSize = { 50, 8, 2 };
-	WINDOWSTYLE LoadCharWindowStyle = { "*", COL_CYAN, COL_GRAY };
+	BEGINPOSITION LoadCharWindowBeginPosition = { 10,5 };
+	WINDOWSIZE LoadCharWindowSize = { 41, 10, 2 };
+	WINDOWSTYLE LoadCharWindowStyle = { "◆",COL_WHITE, COL_LIGHT_GRAY };
 	makeWindow(hWindow, LoadCharWindowBeginPosition, LoadCharWindowSize, LoadCharWindowStyle);
 
-	for (int i = 0; i < objectnum(startText); i++) {
-		strlength = strlen(startText[i]);
-		pos.X = 50 - strlength / 2;
-		pos.Y = 9 + i;
+	ifstream loadtitle;
+	loadtitle.open("Title.txt");
+	string tmp;
+	int i = 0;
+	SetConsoleCursorPosition(hWindow, pos);
+	setColor(COL_WHITE, COL_LIGHT_GRAY);
+	while (!loadtitle.eof()) {
+		getline(loadtitle, tmp);
+		pos.X = 50 - tmp.length()/ 2;
+		pos.Y = 7 + i++;
 		SetConsoleCursorPosition(hWindow, pos);
-		Sleep(400);
-		printf("%s", startText[i]);
-		Sleep(400);
+		cout << tmp << "\n";
 	}
 
 	pos = { 41, 29 };
 	SetConsoleCursorPosition(hWindow, pos);
 	printf("Copyright (c) 2018 Josh, All rights reserved.");
+	setColor(COL_WHITE, COL_BLACK);
 
 	//選択を描く
-	LoadCharWindowBeginPosition = { 38, 16 };
-	LoadCharWindowSize = { 20, 8, 2 };
-	LoadCharWindowStyle = { "*", COL_CYAN, COL_GRAY };
+	LoadCharWindowBeginPosition = { 38, 19 };
+	LoadCharWindowSize = { 10, 8, 2 };
+	LoadCharWindowStyle = { "◆", COL_WHITE, COL_LIGHT_GRAY };
 	makeWindow(hWindow, LoadCharWindowBeginPosition, LoadCharWindowSize, LoadCharWindowStyle);
 	while (1) {
-		pos = { 43, 19 };
+		pos = { 43, 22 };
 		drawchoices(hWindow, pos, choices, 2, row);
+		/*if (_kbhit()) {
+			press = getinput(&row, 2, &column, 1, 2);
+		}
+		SetConsoleCursorPosition(hWindow, pos);
+		setColor(COL_WHITE);
+		printf("HAHAHAHA\n");
+		Sleep(600);
+		SetConsoleCursorPosition(hWindow, pos);
+		setColor(COL_BLACK);
+		printf("HAHAHAHA\n");
+		Sleep(600);*/
 		press = getinput(&row, 2, &column, 1, 2);
 		if (press == ENTER) {
 			SetConsoleTextAttribute(hWindow, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | 0x0);
@@ -235,12 +249,12 @@ int LoadCharacter(HANDLE hWindow, COORD pos, vector<Character> loadList, int lis
 		SetConsoleTextAttribute(hWindow, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
 		BEGINPOSITION LoadCharWindowBeginPosition = { 0, 0 };
 		WINDOWSIZE LoadCharWindowSize = { 50,29,2 };
-		WINDOWSTYLE LoadCharWindowStyle = { "■", COL_CYAN, COL_GRAY };
+		WINDOWSTYLE LoadCharWindowStyle = { "■", COL_CYAN, COL_LIGHT_GRAY };
 		makeWindow(hWindow, LoadCharWindowBeginPosition, LoadCharWindowSize, LoadCharWindowStyle);
 
 		LoadCharWindowBeginPosition = { 56, 6 };
 		LoadCharWindowSize = { 15, 13, 2 };
-		LoadCharWindowStyle = { "■",COL_RED, COL_GRAY };
+		LoadCharWindowStyle = { "■",COL_RED, COL_LIGHT_GRAY };
 		makeWindow(hWindow, LoadCharWindowBeginPosition, LoadCharWindowSize, LoadCharWindowStyle);
 
 		pos = { 6, 4 };
