@@ -36,7 +36,8 @@ typedef struct
 typedef struct
 {
 	string WindowFrameStyle;
-	short WindowColor;
+	short WindowTextColor;
+	short WindowBGColor;
 } WINDOWSTYLE;
 
 int getinput(int *row, int rowNum, int * column, int columnNum, int listNum);
@@ -52,5 +53,7 @@ void drawchoices_forLoad(HANDLE hWindow, COORD pos, vector<Character> loadList, 
 int DrawStartMenu(HANDLE hWindow, COORD pos);
 
 int LoadCharacter(HANDLE hWindow, COORD pos, vector<Character> loadList, int listNum);
+
+void PrintPlayerStatus(HANDLE hWindow, COORD pos, Character input);
 
 #endif // !DISPLAY_H

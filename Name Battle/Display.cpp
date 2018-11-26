@@ -7,6 +7,7 @@
 #include <windows.h>
 #include <iostream>
 #include "Display.h"
+#include "Color.h"
 using namespace std;
 
 const char *startText[] =
@@ -78,7 +79,8 @@ void ClearScreen(HANDLE hWindow, COORD pos, int height, int width) {
 //make the window by position size type
 int makeWindow(HANDLE hwindow, BEGINPOSITION bposition, WINDOWSIZE wsize, WINDOWSTYLE windowStyle)
 {
-	SetConsoleTextAttribute(hwindow, windowStyle.WindowColor);
+	//SetConsoleTextAttribute(hwindow, windowStyle.WindowTextColor);
+	setColor(windowStyle.WindowTextColor, windowStyle.WindowBGColor);
 	COORD cursorPosition;
 	cursorPosition.X = bposition.x;
 	cursorPosition.Y = bposition.y;
@@ -146,27 +148,28 @@ void drawchoices(HANDLE hWindow, COORD pos, char(*choice)[100], int listNum, int
 
 //既存キャラクターを画面に表示する
 void drawchoices_forLoad(HANDLE hWindow, COORD pos, vector<Character> loadList, int listNum, int indexsize, int columnsize, int index, int column) {
-
-
-	pos = { 2, 4 };
-	SetConsoleCursorPosition(hWindow, pos);
-
+	int motoX, motoY;
 	for (int i = 0; i < indexsize; i++) {
-		pos.X = 2;
-		pos.Y = 4 + i * 2;
+		pos.X = 6;
+		pos.Y = 6 + i * 2;
 		SetConsoleCursorPosition(hWindow, pos);
 		for (int j = 0; j < columnsize; j++) {
-			pos.X = 2 + j * 10;
+			pos.X = 6 + j * 15;
 			SetConsoleCursorPosition(hWindow, pos);
 
 			if (i == index && j == column) {
+				motoX = pos.X; motoY = pos.Y;
+				SetConsoleTextAttribute(hWindow, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
+				pos = { 62, 9 };
+				PrintPlayerStatus(hWindow, pos, loadList[i * 3 + j]);
+				pos = { (SHORT)motoX, (SHORT)motoY };
+				SetConsoleCursorPosition(hWindow, pos);
 				SetConsoleTextAttribute(hWindow, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | BACKGROUND_BLUE | BACKGROUND_INTENSITY);
 			}
 			else {
 				SetConsoleTextAttribute(hWindow, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
 			}
-
-			printf("%s", loadList[i * 3 + j].name());
+			printf("%s", loadList[i * 3 + j].name().c_str());
 
 			if ((i * 3 + j) == listNum - 1)
 				break;
@@ -182,13 +185,13 @@ int DrawStartMenu(HANDLE hWindow, COORD pos) {
 	"既存ロード"
 	};
 
-	SetConsoleTextAttribute(hWindow, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | 0x0);
+	setColor(COL_WHITE, COL_GRAY);
 	system("cls");
 
 	Sleep(400);
 	BEGINPOSITION LoadCharWindowBeginPosition = { 25,6 };
-	WINDOWSIZE LoadCharWindowSize = { 50, 8, 1 };
-	WINDOWSTYLE LoadCharWindowStyle = { "*",0xB };
+	WINDOWSIZE LoadCharWindowSize = { 50, 8, 2 };
+	WINDOWSTYLE LoadCharWindowStyle = { "*", COL_CYAN, COL_GRAY };
 	makeWindow(hWindow, LoadCharWindowBeginPosition, LoadCharWindowSize, LoadCharWindowStyle);
 
 	for (int i = 0; i < objectnum(startText); i++) {
@@ -206,12 +209,12 @@ int DrawStartMenu(HANDLE hWindow, COORD pos) {
 	printf("Copyright (c) 2018 Josh, All rights reserved.");
 
 	//選択を描く
-	LoadCharWindowBeginPosition = { 40, 15 };
-	LoadCharWindowSize = { 20, 4, 1 };
-	LoadCharWindowStyle = { "*",0xB };
+	LoadCharWindowBeginPosition = { 38, 16 };
+	LoadCharWindowSize = { 20, 8, 2 };
+	LoadCharWindowStyle = { "*", COL_CYAN, COL_GRAY };
 	makeWindow(hWindow, LoadCharWindowBeginPosition, LoadCharWindowSize, LoadCharWindowStyle);
 	while (1) {
-		pos = { 41, 16 };
+		pos = { 43, 19 };
 		drawchoices(hWindow, pos, choices, 2, row);
 		press = getinput(&row, 2, &column, 1, 2);
 		if (press == ENTER) {
@@ -230,12 +233,17 @@ int LoadCharacter(HANDLE hWindow, COORD pos, vector<Character> loadList, int lis
 		pos = { 0, 0 };
 		SetConsoleCursorPosition(hWindow, pos);
 		SetConsoleTextAttribute(hWindow, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
-		BEGINPOSITION LoadCharWindowBeginPosition = { 0,0 };
-		WINDOWSIZE LoadCharWindowSize = { 50,29,1 };
-		WINDOWSTYLE LoadCharWindowStyle = { "■",0xB };
+		BEGINPOSITION LoadCharWindowBeginPosition = { 0, 0 };
+		WINDOWSIZE LoadCharWindowSize = { 50,29,2 };
+		WINDOWSTYLE LoadCharWindowStyle = { "■", COL_CYAN, COL_GRAY };
 		makeWindow(hWindow, LoadCharWindowBeginPosition, LoadCharWindowSize, LoadCharWindowStyle);
 
-		pos = { 4, 2 };
+		LoadCharWindowBeginPosition = { 56, 6 };
+		LoadCharWindowSize = { 15, 13, 2 };
+		LoadCharWindowStyle = { "■",COL_RED, COL_GRAY };
+		makeWindow(hWindow, LoadCharWindowBeginPosition, LoadCharWindowSize, LoadCharWindowStyle);
+
+		pos = { 6, 4 };
 		SetConsoleCursorPosition(hWindow, pos);
 		printf("どのキャラクターを選びますか？");
 		drawchoices_forLoad(hWindow, pos, loadList, listNum, ((listNum - 1) / 3) + 1, 3, row, column);
@@ -244,6 +252,32 @@ int LoadCharacter(HANDLE hWindow, COORD pos, vector<Character> loadList, int lis
 			return row * 3 + column;
 		}
 	}
-
 	return 0;
+}
+
+void PrintPlayerStatus(HANDLE hWindow, COORD pos, Character input) {
+
+	SetConsoleCursorPosition(hWindow, pos);
+	printf("キャラクター\n");
+	int motoY = (int)pos.Y;
+	for (int i = 0; i < 5; i++) {
+		pos.Y = motoY + 2 + i;
+		SetConsoleCursorPosition(hWindow, pos);
+		printf("                 ");
+		SetConsoleCursorPosition(hWindow, pos);
+		if (i == 0)
+			printf("名前: %s", input.name().c_str());
+		else if (i == 1)
+			printf("HP: %d", input.hp());
+		else if (i == 2)
+			printf("ATK: %d", input.atk());
+		else if (i == 3)
+			printf("DEF: %d", input.def());
+		else {
+			if (input.attribute() == 0)
+				printf("ATTRIBUTE: Physic");
+			else
+				printf("ATTRIBUTE: Magic");
+		}
+	}
 }

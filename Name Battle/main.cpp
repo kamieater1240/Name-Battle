@@ -13,18 +13,17 @@
 #include "Display.h"
 #include "Battle.h"
 #include "Character.h"
+#include "Color.h"
 using namespace std;
 
 //入力したキャラクター名前が存在しているかどうか確認する
 bool FindName(Character *input, vector<Character> loadList, int loadNum);
 
-void PrintPlayerStatus(HANDLE hWindow, COORD pos, Character *input);
-
 //Cursorの座標
 COORD pos = { 0, 0 };
 
 void main() {
-
+	//--------------------------------------コンソール変数-------------------------------------------
 	//window handleを掴む
 	HANDLE hWindow;
 	hWindow = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -39,41 +38,64 @@ void main() {
 
 	//window titleを設定する
 	SetConsoleTitleA("ネーム　バトラー");
+	//-----------------------------------------------------------------------------------------------
 
-	//--------------------------------データロード------------------------------------------------
+	//-----------------------------------------データロード------------------------------------------------
 	//ファイルをオープンする
-	FILE *fp;
-	fp = fopen("status.dat", "ab+");
-	if (!fp) {
-		printf("Fail to open file...\n");
-		exit(1);
-	}
-
+	ifstream fload;
+	fload.open("status.dat", ios::binary | ios::in);
+	
 	//Load saved character
 	vector<Character> saved_Characters;
 	Character load_Character("Fatal Crescent Flash", "Fatal Helix", "Termination Slash - Dawn", "Rebellious Sword Dance");
+	string load_name;
 	int characterNum = 0;
+	
+	while (!fload.eof()) {
+		fload >> load_name;
+		if (load_name == "\0")
+			continue;
+		
+		int temphp, tempatk, tempdef, tempattr;
+		char copy[100];
+		strcpy(copy, load_name.c_str());
+		for (int i = 0; i < strlen(copy); i++)
+			copy[i] = tolower(copy[i]);
+		copy[strlen(copy)] = '\0';
+		int sum = 0;
+		for (int i = 0; i < strlen(copy); i++) {
+			sum = sum + copy[i];
+		}
+		srand(sum);
 
-	while (fread(&load_Character, sizeof(load_Character), 1, fp) == 1) {
-		printf("%d HAHHAA\n", load_Character.hp());
+		for (int i = 0; i < 4; i++) {
+			if (i == 0)
+				temphp = (rand() % (500 - 100 + 1)) + 100;
+			else if (i == 1)
+				tempatk = (rand() % (100 - 10 + 1)) + 10;
+			else if (i == 2)
+				tempdef = (rand() % (100 - 10 + 1)) + 10;
+			else if (i == 3)
+				tempattr = (rand() % (1 - 0 + 1)) + 0;
+		}
+		load_Character.setproperties(load_name, temphp, tempatk, tempdef, tempattr, 200);
 		saved_Characters.push_back(load_Character);
 		characterNum++;
 	}
+	fload.close();
 	//--------------------------------------------------------------------------------------------
 
 	//=========================================//
 	//キャラクター変数を宣言する
-	/*STATUS input_status;
-	STATUS *in_st;
-	in_st = &input_status;*/
 	Character input_status("Fatal Crescent Flash", "Fatal Helix", "Termination Slash - Dawn", "Rebellious Sword Dance");
 	Character *in_st;
 	in_st = &input_status;
 	//=========================================//
 
-	//開始画面を表示する-------------------------------------------
+	//--------------------------------------開始画面を表示する-------------------------------------------
 	int CreateorLoad;
 	bool flag_finished = true;
+
 	while (flag_finished) {
 		//=========================================//
 		CreateorLoad = DrawStartMenu(hWindow, pos);
@@ -83,11 +105,22 @@ void main() {
 			int temphp, tempatk, tempdef, tempattr;
 			char tempname[100];
 
-			srand((unsigned)time(NULL));
+			//srand((unsigned)time(NULL));
 
 			printf("キャラクターの名前を入力してください:");
 			scanf("%s", tempname);
 			in_st->name(tempname);
+
+			char copy[100];
+			strcpy(copy, in_st->name().c_str());
+			for (int i = 0; i < strlen(copy); i++)
+				copy[i] = tolower(copy[i]);
+			copy[strlen(copy)] = '\0';
+			int sum = 0;
+			for (int i = 0; i < strlen(copy); i++) {
+				sum = sum + copy[i];
+			}
+			srand(sum);
 
 			bool HaveorNot = false;
 			if (characterNum > 0) {
@@ -95,6 +128,8 @@ void main() {
 			}
 
 			if (HaveorNot == false) {
+				ofstream fsave;
+				fsave.open("status.dat", ios::binary | ios::app);
 				for (int i = 0; i < 4; i++) {
 					if (i == 0)
 						temphp = (rand() % (500 - 100 + 1)) + 100;
@@ -106,22 +141,23 @@ void main() {
 						tempattr = (rand() % (1 - 0 + 1)) + 0;
 				}
 				in_st->setproperties(tempname, temphp, tempatk, tempdef, tempattr, 200);
-				fwrite(in_st, sizeof(*in_st), 1, fp);
+				fsave << "\n" << in_st->name();
+				fload.close();
 			}
-
-			fclose(fp);
 
 			if (HaveorNot == false) {
 				pos = { 40, 7 };
 				SetConsoleCursorPosition(hWindow, pos);
 				printf("自動生成キャラクター\n");
-				PrintPlayerStatus(hWindow, pos, in_st);
+				pos = { 40, 8 };
+				PrintPlayerStatus(hWindow, pos, *in_st);
 			}
 			else {
 				pos = { 32, 7 };
 				SetConsoleCursorPosition(hWindow, pos);
 				printf("キャラクターはすでに存在しています。\n");
-				PrintPlayerStatus(hWindow, pos, in_st);
+				pos = { 40, 8 };
+				PrintPlayerStatus(hWindow, pos, *in_st);
 			}
 		}
 		//=========================================//
@@ -147,7 +183,8 @@ void main() {
 			printf("%d番目キャラクターをゲットします!!!!!\n", getNum + 1);
 
 			*in_st = saved_Characters[getNum];
-			PrintPlayerStatus(hWindow, pos, in_st);
+			pos = { 42, 8 };
+			PrintPlayerStatus(hWindow, pos, *in_st);
 		}
 		flag_finished = false;
 		rewind(stdin);
@@ -190,13 +227,6 @@ bool FindName(Character *input, vector<Character> loadList, int loadNum) {
 
 	for (int i = 0; i < loadNum; i++) {
 
-		/*for (int j = 0; j < strlen((loadList + i)->name); j++)
-			check2[j] = tolower((loadList + i)->name[j]);
-		check2[strlen((loadList + i)->name)] = '\0';*/
-		/*for (auto i = loadList.begin(); i != loadList.end(); i++) {
-
-
-		}*/
 		for (int j = 0; j < loadList[i].name().length(); j++)
 			check2[j] = tolower(loadList[i].name()[j]);
 		check2[loadList[i].name().length()] = '\0';
@@ -208,30 +238,4 @@ bool FindName(Character *input, vector<Character> loadList, int loadNum) {
 		}
 	}
 	return false;
-}
-
-void PrintPlayerStatus(HANDLE hWindow, COORD pos, Character *input) {
-	
-	pos = { 42, 8 };
-	SetConsoleCursorPosition(hWindow, pos);
-	printf("キャラクター\n");
-	
-	for (int i = 0; i < 5; i++) {
-		pos.Y = 10 + i;
-		SetConsoleCursorPosition(hWindow, pos);
-		if (i == 0)
-			printf("名前：%s", input->name().c_str());
-		else if (i == 1)
-			printf("HP：%d", input->hp());
-		else if (i == 2)
-			printf("ATK：%d", input->atk());
-		else if (i == 3)
-			printf("DEF：%d", input->def());
-		else {
-			if(input->attribute() == 0)
-				printf("ATTRIBUTE：Physic", input->attribute());
-			else
-				printf("ATTRIBUTE：Magic", input->attribute());
-		}
-	}
 }
