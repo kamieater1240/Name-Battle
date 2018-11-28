@@ -175,6 +175,8 @@ void main() {
 
 			int getNum = 0;
 			getNum = LoadCharacter(hWindow, pos, saved_Characters, characterNum);
+			if (getNum == -1)
+				continue;
 			SetConsoleTextAttribute(hWindow, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | 0x0);
 			system("cls");
 
@@ -193,24 +195,27 @@ void main() {
 		_getch();
 	}
 
-	//START BATTLE !!!!!!!!!!!!!!!!!!!!!!!!======================================================//
+	//============================================START GAME !!!!!!!!!!!!!!!!!!!!!!!!=======================================//
 	//バトル準備画面を表示する
 	ClearScreen(hWindow, pos, 30, 100);
 	LoadingBattle(hWindow, pos);
+	Battle(hWindow, pos, *in_st);
+
 	
+
 	rewind(stdin);
 	_getch();
-	system("cls");
+	//system("cls");
 
-	pos = { 35, 11 };
+	/*pos = { 35, 11 };
 	SetConsoleCursorPosition(hWindow, pos);
 	SetConsoleTextAttribute(hWindow, FOREGROUND_RED | FOREGROUND_INTENSITY);
 	printf("はい、バトル～終了！！d(`･∀･)b");
 	pos = { 25, 12 };
 	SetConsoleCursorPosition(hWindow, pos);
-	printf("（バトルの部分はまだできていない、ごめんなさい。）");
+	printf("（バトルの部分はまだできていない、ごめんなさい。）");*/
 
-	//===========================================================================================//
+	//====================================================================================================================//
 
 	rewind(stdin);
 	getchar();

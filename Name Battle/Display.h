@@ -7,8 +7,7 @@
 using namespace std;
 
 //キーボードの入力コードのENUM
-enum INPUTCOMMAND
-{
+enum INPUTCOMMAND {
 	UP = 72,
 	DOWN = 80,
 	LEFT = 75,
@@ -18,23 +17,20 @@ enum INPUTCOMMAND
 };
 
 //windowのサイズ
-typedef struct
-{
+typedef struct {
 	int x;
 	int y;
 	int wide;
 } WINDOWSIZE;
 
 //Windowsのposition
-typedef struct
-{
+typedef struct {
 	int x;
 	int y;
 } BEGINPOSITION;
 
 //Windowsの形
-typedef struct
-{
+typedef struct {
 	string WindowFrameStyle;
 	short WindowTextColor;
 	short WindowBGColor;
@@ -47,6 +43,8 @@ void ClearScreen(HANDLE hWindow, COORD pos, int height, int width);
 int makeWindow(HANDLE hwindow, BEGINPOSITION bposition, WINDOWSIZE wsize, WINDOWSTYLE windowStyle);
 
 void drawchoices(HANDLE hWindow, COORD pos, char(*choice)[100], int listNum, int index);
+
+void drawchoices(HANDLE hWindow, COORD pos, char(*choice)[100], int listNum, int indexsize, int columnsize, int index, int column);
 
 void drawchoices_forLoad(HANDLE hWindow, COORD pos, vector<Character> loadList, int listNum, int indexsize, int columnsize, int index, int column);
 
