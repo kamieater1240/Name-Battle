@@ -44,7 +44,7 @@ void main() {
 	
 	//Load saved character
 	vector<Character> saved_Characters;
-	Character load_Character("Fatal Crescent Flash", "Fatal Helix", "Termination Slash - Dawn", "Rebellious Sword Dance");
+	Character load_Character("弧月一閃", "滅・螺旋撃", "終ノ太刀・暁", "剣乱舞踏");
 	string load_name;
 	int characterNum = 0;
 	
@@ -84,7 +84,7 @@ void main() {
 
 	//=========================================//
 	//キャラクター変数を宣言する
-	Character input_status("Fatal Crescent Flash", "Fatal Helix", "Termination Slash - Dawn", "Rebellious Sword Dance");
+	Character input_status("弧月一閃", "滅・螺旋撃", "終ノ太刀・暁", "剣乱舞踏");
 	Character *in_st;
 	in_st = &input_status;
 	//=========================================//
@@ -193,26 +193,32 @@ void main() {
 	}
 
 	//============================================START GAME !!!!!!!!!!!!!!!!!!!!!!!!=======================================//
+
+	//======================================================バトル　パート==================================================//
 	//例として敵、この後他のタイプを増えるのを予定します
-	Character Enemy("Slime", 100, 10, 10, 0, 10);
+	Character Enemy("Slime", 1000, 10, 10, 0, 10);
 	//バトル準備画面を表示する
-	ClearScreen(hWindow, pos, 30, 100);
+	system("cls");
 	LoadingBattle(hWindow, pos);
 	//バトルスタート
 	Battle(hWindow, pos, *in_st, Enemy);
-
-	rewind(stdin);
-	_getch();
+	
 	system("cls");
 	pos = { 35, 11 };
 	SetConsoleCursorPosition(hWindow, pos);
 	SetConsoleTextAttribute(hWindow, FOREGROUND_RED | FOREGROUND_INTENSITY);
 	printf("はい、バトル～終了！！d(`･∀･)b");
+	rewind(stdin);
+	getchar();
+	rewind(stdin);
+	_getch();
 	//====================================================================================================================//
+
 	system("cls");
 	pos = { 25, 12 };
 	SetConsoleCursorPosition(hWindow, pos);
 	printf("以上は私のネームバトラーのプロトタイプです。");
+	//====================================================================================================================//
 
 	rewind(stdin);
 	getchar();

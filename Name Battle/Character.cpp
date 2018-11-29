@@ -17,7 +17,7 @@ Character::Character(const char *SkillName1, const char *SkillName2, const char 
 	_def = 10;
 	_attribute = 0;
 	_mp = 200;
-	skill1 = Skill(SkillName1, 50, 20);
+	skill1 = Skill(SkillName1, 50, 40);
 	skill2 = Skill(SkillName2, 80, 60);
 	skill3 = Skill(SkillName3, 120, 100);
 	skill4 = Skill(SkillName4, 200, 200);
@@ -40,6 +40,18 @@ Character::Character(const char *name, int HP, int ATK, int DEF, int ATTR, int M
 
 void Character::getDamage(int damage) {
 	_hp -= damage;
-	if (_hp <= 0)
+	if (_hp < 0)
 		_hp = 0;
+}
+
+void Character::consumeMP(int consumedMP) {
+	_mp -= consumedMP;
+	if (_mp < 0)
+		_mp = 0;
+}
+
+void Character::MPrecover(int recoveredMP) {
+	_mp += recoveredMP;
+	if (_mp > 200)
+		_mp = 200;
 }

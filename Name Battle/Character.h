@@ -11,6 +11,8 @@ public:
 	Character(const char *, int, int, int, int, int);
 	Character(const char *, int, int, int, int, int, const char *, const char *, const char *, const char *);
 
+	Skill skill1, skill2, skill3, skill4;
+
 	string name() {
 		return _name;
 	}
@@ -54,10 +56,14 @@ public:
 
 	void getDamage(int damage);
 
+	void consumeMP(int consumedMP);
+
+	void MPrecover(int recoveredMP);
+
 private:
 	string _name;
 	int _hp, _atk, _def, _attribute, _mp;
-	Skill skill1, skill2, skill3, skill4;
+	
 };
 
 #endif // !CHARACTER_H

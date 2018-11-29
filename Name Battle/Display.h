@@ -56,4 +56,6 @@ void PrintCharacterStatus(HANDLE hWindow, COORD pos, Character input);
 
 bool FindName(Character *input, vector<Character> loadList, int loadNum);
 
+void PrintSkillStatus(HANDLE hWindow, COORD pos, Skill craft);
+
 #endif // !DISPLAY_H

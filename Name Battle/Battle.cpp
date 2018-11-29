@@ -19,6 +19,8 @@ char choices[4][100] = {
 		"離脱"
 };
 
+char skills[4][100];
+
 //戦闘準備画面
 void LoadingBattle(HANDLE hWindow, COORD pos) {
 
@@ -48,12 +50,25 @@ void LoadingBattle(HANDLE hWindow, COORD pos) {
 		Sleep(600);
 	}
 	system("cls");
+	rewind(stdin);
+	_getch();
 }
 
 //戦闘関数
 void Battle(HANDLE hWindow, COORD pos, Character Player, Character Enemy) {
-	bool battleFinish = false, myTurn = true;
-	int row = 0, col = 0, press = 0;
+	bool battleFinish = false, myTurn = true, craftChoosing = false;
+	int row = 0, col = 0, press = 0, successEscape = 0;
+	for (int i = 0; i < 4; i++) {
+		if (i == 0)
+			strcpy(skills[i], Player.skill1.name().c_str());
+		else if (i == 1)
+			strcpy(skills[i], Player.skill2.name().c_str());
+		else if (i == 2)
+			strcpy(skills[i], Player.skill3.name().c_str());
+		else if (i == 3)
+			strcpy(skills[i], Player.skill4.name().c_str());
+	}
+
 	//=====================================戦闘画面ボーダーを描く=====================================
 	BEGINPOSITION LoadCharWindowBeginPosition = { 0, 0 };
 	WINDOWSIZE LoadCharWindowSize = { 50, 7, 1 };
@@ -76,19 +91,24 @@ void Battle(HANDLE hWindow, COORD pos, Character Player, Character Enemy) {
 		printf("■");
 	}
 	setColor(COL_WHITE);
-	//================================================================================================
+	//=================================================================================================
+
+	//==========================================戦闘スタート===========================================
 	while (!battleFinish) {
 
-		//=============================キャラクターのステータスと画像を描く===============================
+		//=============================キャラクターのステータスと画像を描く============================
 		pos = { 4, 10 };
 		PrintCharacterStatus(hWindow, pos, Player);
 		//=============================================================================================
-		//================================Enemyのステータスと画像を描く==================================
+
+		//================================Enemyのステータスと画像を描く================================
 		pos = { 80, 10 };
 		PrintCharacterStatus(hWindow, pos, Enemy);
 		//=============================================================================================
-		//=====================================動作メニューを描く========================================
-		row = 0, col = 0;
+
+		//=====================================プレイヤーのターン======================================
+		//===================動作メニューを描く、動作を選択したらその効果を実現する====================
+		row = 0, col = 0; press = 0;
 		while (press != ENTER) {
 
 			pos = { 10, 26 };
@@ -103,26 +123,148 @@ void Battle(HANDLE hWindow, COORD pos, Character Player, Character Enemy) {
 					SetConsoleCursorPosition(hWindow, pos);
 					printf("The enemy get %d damages!", Player.atk());
 					Enemy.getDamage(Player.atk());
+					Sleep(800);
+					pos = { 55, 26 };
+					ClearScreen(hWindow, pos, 3, 30);
 				}
 				else if (row == 0 && col == 1) {					//戦技
-					printf("Use craft!");
+					craftChoosing = true;
+					pos = { 10, 26 };
+					ClearScreen(hWindow, pos, 3, 20);
+					row = 0; col = 0; press = 0;
+					while (craftChoosing) {
+
+						pos = { 10, 26 };
+						drawchoices(hWindow, pos, skills, 4, 2, 2, row, col);
+						pos = { 44, 27 };
+						if (row == 0 && col == 0)
+							PrintSkillStatus(hWindow, pos, Player.skill1);
+						else if (row == 0 && col == 1)
+							PrintSkillStatus(hWindow, pos, Player.skill2);
+						else if (row == 1 && col == 0)
+							PrintSkillStatus(hWindow, pos, Player.skill3);
+						else if (row == 1 && col == 1)
+							PrintSkillStatus(hWindow, pos, Player.skill4);
+						press = getinput(&row, 2, &col, 2, 4);
+						if (press == ENTER) {
+							pos = { 55, 26 };
+							SetConsoleCursorPosition(hWindow, pos);
+							if (row == 0 && col == 0) {				//戦技一番目
+								if (Player.mp() >= Player.skill1.costMP()) {
+									printf("%s uesd %s\n", Player.name().c_str(), Player.skill1.name().c_str());
+									pos.Y++;
+									SetConsoleCursorPosition(hWindow, pos);
+									printf("The enemy get %d damages!", Player.skill1.damage());
+									Enemy.getDamage(Player.skill1.damage());
+									Player.consumeMP(Player.skill1.costMP());
+								}
+								else {
+									printf("MP is not enough to use the craft!");
+									Sleep(800);
+									pos = { 55, 26 };
+									ClearScreen(hWindow, pos, 3, 40);
+									continue;
+								}
+							}
+							else if (row == 0 && col == 1) {		//戦技二番目
+								if (Player.mp() >= Player.skill2.costMP()) {
+									printf("%s uesd %s\n", Player.name().c_str(), Player.skill2.name().c_str());
+									pos.Y++;
+									SetConsoleCursorPosition(hWindow, pos);
+									printf("The enemy get %d damages!", Player.skill2.damage());
+									Enemy.getDamage(Player.skill2.damage());
+									Player.consumeMP(Player.skill2.costMP());
+								}
+								else {
+									printf("MP is not enough to use the craft!");
+									Sleep(800);
+									pos = { 55, 26 };
+									ClearScreen(hWindow, pos, 3, 40);
+									continue;
+								}
+							}
+							else if (row == 1 && col == 0) {		//戦技三番目
+								if (Player.mp() >= Player.skill3.costMP()) {
+									printf("%s uesd %s\n", Player.name().c_str(), Player.skill3.name().c_str());
+									pos.Y++;
+									SetConsoleCursorPosition(hWindow, pos);
+									printf("The enemy get %d damages!", Player.skill3.damage());
+									Enemy.getDamage(Player.skill3.damage());
+									Player.consumeMP(Player.skill3.costMP());
+								}
+								else {
+									printf("MP is not enough to use the craft!");
+									Sleep(800);
+									pos = { 55, 26 };
+									ClearScreen(hWindow, pos, 3, 40);
+									continue;
+									
+								}
+							}
+							else if (row == 1 && col == 1) {		//戦技四番目
+								if (Player.mp() >= Player.skill4.costMP()) {
+									printf("%s uesd %s\n", Player.name().c_str(), Player.skill4.name().c_str());
+									pos.Y++;
+									SetConsoleCursorPosition(hWindow, pos);
+									printf("The enemy get %d damages!", Player.skill4.damage());
+									Enemy.getDamage(Player.skill4.damage());
+									Player.consumeMP(Player.skill4.costMP());
+								}
+								else {
+									printf("MP is not enough to use the craft!");
+									Sleep(800);
+									pos = { 55, 26 };
+									ClearScreen(hWindow, pos, 3, 40);
+									continue;
+								}
+							}
+							craftChoosing = false;
+							Sleep(800);
+							pos = { 55, 26 };
+							ClearScreen(hWindow, pos, 3, 40);
+						}
+						else if (press == ESC) {
+							craftChoosing = false;
+							pos = { 44, 27 };
+							SetConsoleCursorPosition(hWindow, pos);
+							printf("                                            ");
+						}
+							
+						pos = { 10, 26 };
+						ClearScreen(hWindow, pos, 3, 25);
+					}
 				}
 				else if (row == 1 && col == 0) {					//道具を使う
-					printf("Use item!");
+					printf("Use item! Not Finish yet.");
+					Sleep(800);
+					pos = { 55, 26 };
+					ClearScreen(hWindow, pos, 3, 30);
 				}
-				else {												//戦闘から離脱
-					printf("Successfully escape from the battle!");
-					battleFinish = true;
+				else {												//戦闘から離脱する
+					srand(time(NULL));
+					successEscape = (rand() % (100 - 1 + 1)) + 1;
+					if (successEscape > 60) {
+						printf("Successfully escape from the battle!");
+						battleFinish = true;
+					}
+					else {
+						printf("AHH! Fail to escape from the battle!><");
+					}
+					Sleep(800);
+					pos = { 55, 26 };
+					ClearScreen(hWindow, pos, 3, 40);
 				}
-				Sleep(800);
-				pos = { 55, 26 };
-				ClearScreen(hWindow, pos, 3, 30);
+				Player.MPrecover(30);
 			}
 			if (Enemy.hp() <= 0)
 				battleFinish = true;
 		}
 		//================================================================================================
-		press = 0;
+
+		//=========================================敵のターン=============================================
+
+		//================================================================================================
 	}
+	//=================================================================================================
 
 }

@@ -224,7 +224,7 @@ int DrawStartMenu(HANDLE hWindow, COORD pos) {
 		cout << tmp << "\n";
 	}
 
-	pos = { 41, 29 };
+	pos = { 41, 30 };
 	SetConsoleCursorPosition(hWindow, pos);
 	printf("Copyright (c) 2018 Josh, All rights reserved.");
 	setColor(COL_WHITE, COL_BLACK);
@@ -255,7 +255,7 @@ int LoadCharacter(HANDLE hWindow, COORD pos, vector<Character> loadList, int lis
 		SetConsoleCursorPosition(hWindow, pos);
 		SetConsoleTextAttribute(hWindow, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
 		BEGINPOSITION LoadCharWindowBeginPosition = { 0, 0 };
-		WINDOWSIZE LoadCharWindowSize = { 50,29,2 };
+		WINDOWSIZE LoadCharWindowSize = { 50, 31, 2 };
 		WINDOWSTYLE LoadCharWindowStyle = { "Å°", COL_CYAN, COL_LIGHT_GRAY };
 		makeWindow(hWindow, LoadCharWindowBeginPosition, LoadCharWindowSize, LoadCharWindowStyle);
 
@@ -329,4 +329,20 @@ bool FindName(Character *input, vector<Character> loadList, int loadNum) {
 		}
 	}
 	return false;
+}
+
+void PrintSkillStatus(HANDLE hWindow, COORD pos, Skill craft) {
+	int motoX = (int)pos.X;
+	SetConsoleCursorPosition(hWindow, pos);
+	printf("                                            ");
+	for (int i = 0; i < 3; i++) {
+		pos.X = motoX + i*16;
+		SetConsoleCursorPosition(hWindow, pos);
+		if (i == 0)
+			printf("%s", craft.name().c_str());
+		else if (i == 1)
+			printf("ÉpÉèÅ[: %d", craft.damage());
+		else if (i == 2)
+			printf("Cost MP: %d", craft.costMP());
+	}
 }

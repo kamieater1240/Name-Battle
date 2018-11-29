@@ -9,6 +9,18 @@ public:
 	Skill();
 	Skill(const char*, int, int);
 
+	string name() {
+		return _name;
+	}
+
+	int damage() {
+		return _power;
+	}
+
+	int costMP() {
+		return _consumeMP;
+	}
+
 private:
 	string _name;
 	int _power;
