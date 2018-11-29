@@ -61,16 +61,14 @@ int getinput(int *row, int rowNum, int *column, int columnNum, int listNum) {
 }
 
 void ClearScreen(HANDLE hWindow, COORD pos, int height, int width) {
-
-	pos = { 0, 0 };
-	SetConsoleCursorPosition(hWindow, pos);
+	int motoX = pos.X, motoY = pos.Y;
 	for (int i = 0; i < height; i++) {
+		pos = { (SHORT)motoX, (SHORT)(motoY + i) };
+		SetConsoleCursorPosition(hWindow, pos);
 		for (int j = 0; j < width; j++) {
 			printf(" ");
 		}
 	}
-	pos = { 0, 0 };
-	SetConsoleCursorPosition(hWindow, pos);
 }
 
 //make the window by position size type
@@ -179,7 +177,7 @@ void drawchoices_forLoad(HANDLE hWindow, COORD pos, vector<Character> loadList, 
 				motoX = pos.X; motoY = pos.Y;
 				SetConsoleTextAttribute(hWindow, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
 				pos = { 62, 8 };
-				PrintPlayerStatus(hWindow, pos, loadList[i * 3 + j]);
+				PrintCharacterStatus(hWindow, pos, loadList[i * 3 + j]);
 				pos = { (SHORT)motoX, (SHORT)motoY };
 				SetConsoleCursorPosition(hWindow, pos);
 				SetConsoleTextAttribute(hWindow, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | BACKGROUND_BLUE | BACKGROUND_INTENSITY);
@@ -282,7 +280,7 @@ int LoadCharacter(HANDLE hWindow, COORD pos, vector<Character> loadList, int lis
 	return 0;
 }
 
-void PrintPlayerStatus(HANDLE hWindow, COORD pos, Character input) {
+void PrintCharacterStatus(HANDLE hWindow, COORD pos, Character input) {
 
 	int motoY = (int)pos.Y;
 	for (int i = 0; i < 6; i++) {
@@ -307,4 +305,28 @@ void PrintPlayerStatus(HANDLE hWindow, COORD pos, Character input) {
 				printf("ATTRIBUTE: Magic");
 		}
 	}
+}
+
+//入力したキャラクター名前が存在しているかどうか確認する
+bool FindName(Character *input, vector<Character> loadList, int loadNum) {
+
+	char check1[100], check2[100];
+
+	for (int i = 0; i < input->name().length(); i++)
+		check1[i] = tolower(input->name()[i]);
+	check1[input->name().length()] = '\0';
+
+	for (int i = 0; i < loadNum; i++) {
+
+		for (int j = 0; j < loadList[i].name().length(); j++)
+			check2[j] = tolower(loadList[i].name()[j]);
+		check2[loadList[i].name().length()] = '\0';
+
+		//たとえ入力された名前のアルファベットの大小が違っても同じ名前を判断できる
+		if (!strcmp(check1, check2)) {
+			input->setproperties(input->name(), loadList[i].hp(), loadList[i].atk(), loadList[i].def(), loadList[i].attribute(), 200);
+			return true;
+		}
+	}
+	return false;
 }

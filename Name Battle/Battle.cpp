@@ -51,8 +51,8 @@ void LoadingBattle(HANDLE hWindow, COORD pos) {
 }
 
 //戦闘関数
-void Battle(HANDLE hWindow, COORD pos, Character Player/*, Character Enemy*/) {
-	bool battleFinish = false;
+void Battle(HANDLE hWindow, COORD pos, Character Player, Character Enemy) {
+	bool battleFinish = false, myTurn = true;
 	int row = 0, col = 0, press = 0;
 	//=====================================戦闘画面ボーダーを描く=====================================
 	BEGINPOSITION LoadCharWindowBeginPosition = { 0, 0 };
@@ -69,22 +69,29 @@ void Battle(HANDLE hWindow, COORD pos, Character Player/*, Character Enemy*/) {
 	LoadCharWindowSize = { 50, 7, 1 };
 	LoadCharWindowStyle = { "■", COL_RED, COL_LIGHT_GRAY };
 	makeWindow(hWindow, LoadCharWindowBeginPosition, LoadCharWindowSize, LoadCharWindowStyle);
+	setColor(COL_RED, COL_LIGHT_GRAY);
+	for (int i = 0; i < 5; i++) {
+		pos.X = 38; pos.Y = 25 + i;
+		SetConsoleCursorPosition(hWindow, pos);
+		printf("■");
+	}
+	setColor(COL_WHITE);
 	//================================================================================================
 	while (!battleFinish) {
 
 		//=============================キャラクターのステータスと画像を描く===============================
 		pos = { 4, 10 };
-		PrintPlayerStatus(hWindow, pos, Player);
-		//================================================================================================
-
-		//======================================動作メニューを描く========================================
-
-		rewind(stdin);
-		_getch();
+		PrintCharacterStatus(hWindow, pos, Player);
+		//=============================================================================================
+		//================================Enemyのステータスと画像を描く==================================
+		pos = { 80, 10 };
+		PrintCharacterStatus(hWindow, pos, Enemy);
+		//=============================================================================================
+		//=====================================動作メニューを描く========================================
 		row = 0, col = 0;
 		while (press != ENTER) {
-			
-			pos = { 8, 26 };
+
+			pos = { 10, 26 };
 			drawchoices(hWindow, pos, choices, 4, 2, 2, row, col);
 			press = getinput(&row, 2, &col, 2, 4);
 			if (press == ENTER) {
@@ -95,6 +102,7 @@ void Battle(HANDLE hWindow, COORD pos, Character Player/*, Character Enemy*/) {
 					pos.Y++;
 					SetConsoleCursorPosition(hWindow, pos);
 					printf("The enemy get %d damages!", Player.atk());
+					Enemy.getDamage(Player.atk());
 				}
 				else if (row == 0 && col == 1) {					//戦技
 					printf("Use craft!");
@@ -104,14 +112,14 @@ void Battle(HANDLE hWindow, COORD pos, Character Player/*, Character Enemy*/) {
 				}
 				else {												//戦闘から離脱
 					printf("Successfully escape from the battle!");
+					battleFinish = true;
 				}
 				Sleep(800);
+				pos = { 55, 26 };
+				ClearScreen(hWindow, pos, 3, 30);
 			}
-			for (int i = 0; i < 3; i++) {
-				pos.X = 55; pos.Y = 26 +i;
-				SetConsoleCursorPosition(hWindow, pos);
-				printf("                                        ");
-			}
+			if (Enemy.hp() <= 0)
+				battleFinish = true;
 		}
 		//================================================================================================
 		press = 0;

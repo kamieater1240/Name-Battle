@@ -8,7 +8,8 @@ using namespace std;
 class Character {
 public:
 	Character(const char *, const char *, const char *, const char *);
-	Character(string&, int, int, int, int, int, const char *, const char *, const char *, const char *);
+	Character(const char *, int, int, int, int, int);
+	Character(const char *, int, int, int, int, int, const char *, const char *, const char *, const char *);
 
 	string name() {
 		return _name;
@@ -50,6 +51,8 @@ public:
 		_attribute = attr;
 		_mp = mp;
 	}
+
+	void getDamage(int damage);
 
 private:
 	string _name;

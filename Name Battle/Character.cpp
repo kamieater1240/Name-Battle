@@ -23,11 +23,23 @@ Character::Character(const char *SkillName1, const char *SkillName2, const char 
 	skill4 = Skill(SkillName4, 200, 200);
 }
 
-Character::Character(string &name, int HP, int ATK, int DEF, int ATTR, int MP, const char *SkillName1, const char *SkillName2, const char *SkillName3, const char *SkillName4)
+Character::Character(const char *name, int HP, int ATK, int DEF, int ATTR, int MP)
+	:_name(name), _hp(HP), _atk(ATK), _def(DEF), _attribute(ATTR), _mp(MP)
+{
+
+}
+
+Character::Character(const char *name, int HP, int ATK, int DEF, int ATTR, int MP, const char *SkillName1, const char *SkillName2, const char *SkillName3, const char *SkillName4)
 	:_name(name), _hp(HP), _atk(ATK), _def(DEF), _attribute(ATTR), _mp(MP)
 {
 	skill1 = Skill(SkillName1, 50, 20);
 	skill2 = Skill(SkillName2, 80, 60);
 	skill3 = Skill(SkillName3, 120, 100);
 	skill4 = Skill(SkillName4, 200, 200);
+}
+
+void Character::getDamage(int damage) {
+	_hp -= damage;
+	if (_hp <= 0)
+		_hp = 0;
 }

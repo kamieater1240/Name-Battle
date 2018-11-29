@@ -52,6 +52,8 @@ int DrawStartMenu(HANDLE hWindow, COORD pos);
 
 int LoadCharacter(HANDLE hWindow, COORD pos, vector<Character> loadList, int listNum);
 
-void PrintPlayerStatus(HANDLE hWindow, COORD pos, Character input);
+void PrintCharacterStatus(HANDLE hWindow, COORD pos, Character input);
+
+bool FindName(Character *input, vector<Character> loadList, int loadNum);
 
 #endif // !DISPLAY_H

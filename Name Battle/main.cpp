@@ -16,9 +16,6 @@
 #include "Color.h"
 using namespace std;
 
-//入力したキャラクター名前が存在しているかどうか確認する
-bool FindName(Character *input, vector<Character> loadList, int loadNum);
-
 //Cursorの座標
 COORD pos = { 0, 0 };
 
@@ -150,14 +147,14 @@ void main() {
 				SetConsoleCursorPosition(hWindow, pos);
 				printf("自動生成キャラクター\n");
 				pos = { 40, 8 };
-				PrintPlayerStatus(hWindow, pos, *in_st);
+				PrintCharacterStatus(hWindow, pos, *in_st);
 			}
 			else {
 				pos = { 32, 7 };
 				SetConsoleCursorPosition(hWindow, pos);
 				printf("キャラクターはすでに存在しています。\n");
 				pos = { 40, 8 };
-				PrintPlayerStatus(hWindow, pos, *in_st);
+				PrintCharacterStatus(hWindow, pos, *in_st);
 			}
 		}
 		//=========================================//
@@ -186,7 +183,7 @@ void main() {
 
 			*in_st = saved_Characters[getNum];
 			pos = { 42, 8 };
-			PrintPlayerStatus(hWindow, pos, *in_st);
+			PrintCharacterStatus(hWindow, pos, *in_st);
 		}
 		flag_finished = false;
 		rewind(stdin);
@@ -196,51 +193,28 @@ void main() {
 	}
 
 	//============================================START GAME !!!!!!!!!!!!!!!!!!!!!!!!=======================================//
+	//例として敵、この後他のタイプを増えるのを予定します
+	Character Enemy("Slime", 100, 10, 10, 0, 10);
 	//バトル準備画面を表示する
 	ClearScreen(hWindow, pos, 30, 100);
 	LoadingBattle(hWindow, pos);
-	Battle(hWindow, pos, *in_st);
-
-	
+	//バトルスタート
+	Battle(hWindow, pos, *in_st, Enemy);
 
 	rewind(stdin);
 	_getch();
-	//system("cls");
-
-	/*pos = { 35, 11 };
+	system("cls");
+	pos = { 35, 11 };
 	SetConsoleCursorPosition(hWindow, pos);
 	SetConsoleTextAttribute(hWindow, FOREGROUND_RED | FOREGROUND_INTENSITY);
 	printf("はい、バトル～終了！！d(`･∀･)b");
+	//====================================================================================================================//
+	system("cls");
 	pos = { 25, 12 };
 	SetConsoleCursorPosition(hWindow, pos);
-	printf("（バトルの部分はまだできていない、ごめんなさい。）");*/
-
-	//====================================================================================================================//
+	printf("以上は私のネームバトラーのプロトタイプです。");
 
 	rewind(stdin);
 	getchar();
 	return;
-}
-
-bool FindName(Character *input, vector<Character> loadList, int loadNum) {
-
-	char check1[100], check2[100];
-
-	for (int i = 0; i < input->name().length(); i++)
-		check1[i] = tolower(input->name()[i]);
-	check1[input->name().length()] = '\0';
-
-	for (int i = 0; i < loadNum; i++) {
-
-		for (int j = 0; j < loadList[i].name().length(); j++)
-			check2[j] = tolower(loadList[i].name()[j]);
-		check2[loadList[i].name().length()] = '\0';
-
-		//たとえ入力された名前のアルファベットの大小が違っても同じ名前を判断できる
-		if (!strcmp(check1, check2)) {
-			input->setproperties(input->name(), loadList[i].hp(), loadList[i].atk(), loadList[i].def(), loadList[i].attribute(), 200);
-			return true;
-		}
-	}
-	return false;
 }
