@@ -121,9 +121,9 @@ void Battle(HANDLE hWindow, COORD pos, Character Player, Character Enemy) {
 					printf("%s slash the enemy!\n", Player.name().c_str());
 					pos.Y++;
 					SetConsoleCursorPosition(hWindow, pos);
-					printf("The enemy get %d damages!", Player.atk());
+					printf("The enemy gets %d damages!", Player.atk());
 					Enemy.getDamage(Player.atk());
-					Sleep(800);
+					Sleep(1200);
 					pos = { 55, 26 };
 					ClearScreen(hWindow, pos, 3, 30);
 				}
@@ -147,20 +147,22 @@ void Battle(HANDLE hWindow, COORD pos, Character Player, Character Enemy) {
 							PrintSkillStatus(hWindow, pos, Player.skill4);
 						press = getinput(&row, 2, &col, 2, 4);
 						if (press == ENTER) {
+							pos = { 44, 27 };
+							ClearScreen(hWindow, pos, 1, 45);
 							pos = { 55, 26 };
 							SetConsoleCursorPosition(hWindow, pos);
 							if (row == 0 && col == 0) {				//戦技一番目
 								if (Player.mp() >= Player.skill1.costMP()) {
-									printf("%s uesd %s\n", Player.name().c_str(), Player.skill1.name().c_str());
+									printf("%s used %s\n", Player.name().c_str(), Player.skill1.name().c_str());
 									pos.Y++;
 									SetConsoleCursorPosition(hWindow, pos);
-									printf("The enemy get %d damages!", Player.skill1.damage());
+									printf("The enemy gets %d damages!", Player.skill1.damage());
 									Enemy.getDamage(Player.skill1.damage());
 									Player.consumeMP(Player.skill1.costMP());
 								}
 								else {
 									printf("MP is not enough to use the craft!");
-									Sleep(800);
+									Sleep(1200);
 									pos = { 55, 26 };
 									ClearScreen(hWindow, pos, 3, 40);
 									continue;
@@ -168,16 +170,16 @@ void Battle(HANDLE hWindow, COORD pos, Character Player, Character Enemy) {
 							}
 							else if (row == 0 && col == 1) {		//戦技二番目
 								if (Player.mp() >= Player.skill2.costMP()) {
-									printf("%s uesd %s\n", Player.name().c_str(), Player.skill2.name().c_str());
+									printf("%s used %s\n", Player.name().c_str(), Player.skill2.name().c_str());
 									pos.Y++;
 									SetConsoleCursorPosition(hWindow, pos);
-									printf("The enemy get %d damages!", Player.skill2.damage());
+									printf("The enemy gets %d damages!", Player.skill2.damage());
 									Enemy.getDamage(Player.skill2.damage());
 									Player.consumeMP(Player.skill2.costMP());
 								}
 								else {
 									printf("MP is not enough to use the craft!");
-									Sleep(800);
+									Sleep(1200);
 									pos = { 55, 26 };
 									ClearScreen(hWindow, pos, 3, 40);
 									continue;
@@ -185,16 +187,16 @@ void Battle(HANDLE hWindow, COORD pos, Character Player, Character Enemy) {
 							}
 							else if (row == 1 && col == 0) {		//戦技三番目
 								if (Player.mp() >= Player.skill3.costMP()) {
-									printf("%s uesd %s\n", Player.name().c_str(), Player.skill3.name().c_str());
+									printf("%s used %s\n", Player.name().c_str(), Player.skill3.name().c_str());
 									pos.Y++;
 									SetConsoleCursorPosition(hWindow, pos);
-									printf("The enemy get %d damages!", Player.skill3.damage());
+									printf("The enemy gets %d damages!", Player.skill3.damage());
 									Enemy.getDamage(Player.skill3.damage());
 									Player.consumeMP(Player.skill3.costMP());
 								}
 								else {
 									printf("MP is not enough to use the craft!");
-									Sleep(800);
+									Sleep(1200);
 									pos = { 55, 26 };
 									ClearScreen(hWindow, pos, 3, 40);
 									continue;
@@ -203,23 +205,23 @@ void Battle(HANDLE hWindow, COORD pos, Character Player, Character Enemy) {
 							}
 							else if (row == 1 && col == 1) {		//戦技四番目
 								if (Player.mp() >= Player.skill4.costMP()) {
-									printf("%s uesd %s\n", Player.name().c_str(), Player.skill4.name().c_str());
+									printf("%s used %s\n", Player.name().c_str(), Player.skill4.name().c_str());
 									pos.Y++;
 									SetConsoleCursorPosition(hWindow, pos);
-									printf("The enemy get %d damages!", Player.skill4.damage());
+									printf("The enemy gets %d damages!", Player.skill4.damage());
 									Enemy.getDamage(Player.skill4.damage());
 									Player.consumeMP(Player.skill4.costMP());
 								}
 								else {
 									printf("MP is not enough to use the craft!");
-									Sleep(800);
+									Sleep(1200);
 									pos = { 55, 26 };
 									ClearScreen(hWindow, pos, 3, 40);
 									continue;
 								}
 							}
 							craftChoosing = false;
-							Sleep(800);
+							Sleep(1200);
 							pos = { 55, 26 };
 							ClearScreen(hWindow, pos, 3, 40);
 						}
@@ -236,7 +238,7 @@ void Battle(HANDLE hWindow, COORD pos, Character Player, Character Enemy) {
 				}
 				else if (row == 1 && col == 0) {					//道具を使う
 					printf("Use item! Not Finish yet.");
-					Sleep(800);
+					Sleep(1200);
 					pos = { 55, 26 };
 					ClearScreen(hWindow, pos, 3, 30);
 				}
@@ -244,13 +246,13 @@ void Battle(HANDLE hWindow, COORD pos, Character Player, Character Enemy) {
 					srand(time(NULL));
 					successEscape = (rand() % (100 - 1 + 1)) + 1;
 					if (successEscape > 60) {
-						printf("Successfully escape from the battle!");
+						printf("Successfully escaped from the battle!");
 						battleFinish = true;
 					}
 					else {
 						printf("AHH! Fail to escape from the battle!><");
 					}
-					Sleep(800);
+					Sleep(1200);
 					pos = { 55, 26 };
 					ClearScreen(hWindow, pos, 3, 40);
 				}
@@ -262,7 +264,16 @@ void Battle(HANDLE hWindow, COORD pos, Character Player, Character Enemy) {
 		//================================================================================================
 
 		//=========================================敵のターン=============================================
-
+		pos = { 55, 26 };
+		SetConsoleCursorPosition(hWindow, pos);
+		printf("%s attacked %s!!", Enemy.name().c_str(), Player.name().c_str());
+		pos.Y++;
+		SetConsoleCursorPosition(hWindow, pos);
+		printf("%s gets %d damages!", Player.name().c_str(), Enemy.atk());
+		Player.getDamage(Enemy.atk());
+		Sleep(1200);
+		pos = { 55, 26 };
+		ClearScreen(hWindow, pos, 3, 30);
 		//================================================================================================
 	}
 	//=================================================================================================
