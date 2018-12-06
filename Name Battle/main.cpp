@@ -39,6 +39,9 @@ void main() {
 
 	//-----------------------------------------データロード------------------------------------------------
 	//ファイルをオープンする
+	FILE *fp;
+	fp = fopen("status.dat", "ab+");
+	fclose(fp);
 	ifstream fload;
 	fload.open("status.dat", ios::binary | ios::in);
 	

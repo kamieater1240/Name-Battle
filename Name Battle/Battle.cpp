@@ -134,7 +134,7 @@ void Battle(HANDLE hWindow, COORD pos, Character Player, Character Enemy) {
 					row = 0; col = 0; press = 0;
 					while (craftChoosing) {
 
-						pos = { 10, 26 };
+						pos = { 8, 26 };
 						drawchoices(hWindow, pos, skills, 4, 2, 2, row, col);
 						pos = { 44, 27 };
 						if (row == 0 && col == 0)
@@ -232,7 +232,7 @@ void Battle(HANDLE hWindow, COORD pos, Character Player, Character Enemy) {
 							printf("                                            ");
 						}
 							
-						pos = { 10, 26 };
+						pos = { 8, 26 };
 						ClearScreen(hWindow, pos, 3, 25);
 					}
 				}
@@ -256,24 +256,44 @@ void Battle(HANDLE hWindow, COORD pos, Character Player, Character Enemy) {
 					pos = { 55, 26 };
 					ClearScreen(hWindow, pos, 3, 40);
 				}
-				Player.MPrecover(30);
 			}
-			if (Enemy.hp() <= 0)
-				battleFinish = true;
+		}
+		Player.MPrecover(30);
+		pos = { 4, 10 };
+		PrintCharacterStatus(hWindow, pos, Player);
+		pos = { 80, 10 };
+		PrintCharacterStatus(hWindow, pos, Enemy);
+		if (Enemy.hp() <= 0) {
+			battleFinish = true;
+			system("cls");
+			pos = { 35, 11 };
+			SetConsoleCursorPosition(hWindow, pos);
+			printf("Battle Victory!!!");
+			Sleep(1200);
 		}
 		//================================================================================================
 
 		//=========================================“G‚Ìƒ^[ƒ“=============================================
-		pos = { 55, 26 };
-		SetConsoleCursorPosition(hWindow, pos);
-		printf("%s attacked %s!!", Enemy.name().c_str(), Player.name().c_str());
-		pos.Y++;
-		SetConsoleCursorPosition(hWindow, pos);
-		printf("%s gets %d damages!", Player.name().c_str(), Enemy.atk());
-		Player.getDamage(Enemy.atk());
-		Sleep(1200);
-		pos = { 55, 26 };
-		ClearScreen(hWindow, pos, 3, 30);
+		if (battleFinish != true) {
+			pos = { 55, 26 };
+			SetConsoleCursorPosition(hWindow, pos);
+			printf("%s attacked %s!!", Enemy.name().c_str(), Player.name().c_str());
+			pos.Y++;
+			SetConsoleCursorPosition(hWindow, pos);
+			printf("%s gets %d damages!", Player.name().c_str(), Enemy.atk());
+			Player.getDamage(Enemy.atk());
+			Sleep(1200);
+			pos = { 55, 26 };
+			ClearScreen(hWindow, pos, 3, 30);
+		}
+		if (Player.hp() <= 0) {
+			battleFinish = true;
+			system("cls");
+			pos = { 35, 11 };
+			SetConsoleCursorPosition(hWindow, pos);
+			printf("You Died.........¡ßR(ßL„D`)Éß¡");
+			Sleep(1200);
+		}
 		//================================================================================================
 	}
 	//=================================================================================================
